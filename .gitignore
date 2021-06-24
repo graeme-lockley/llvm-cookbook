@@ -1,0 +1,6 @@
+snippets/*.bc
+snippets/*.bin
+snippets/*.out
+
+lib/*.bc
+lib/*.ll
