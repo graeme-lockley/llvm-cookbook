@@ -14,7 +14,7 @@ const i32 MAGIC_NUMBER = 123;
 
 public void main() {
     _print_i32(MAGIC_NUMBER);
-    _println();
+    _print_newline();
 }
 ```
 
@@ -39,7 +39,7 @@ const i32 MAGIC_NUMBER = 123 + 654;
 
 public void main() {
     _print_i32(MAGIC_NUMBER);
-    _println();
+    _print_newline();
 }
 ```
 
@@ -66,7 +66,7 @@ public i32 arb_function(i32 a) {
 
 public void main() {
     _print_i32(SOME_NUMBER);
-    _println();
+    _print_newline();
 }
 ```
 
