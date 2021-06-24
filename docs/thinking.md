@@ -1,6 +1,6 @@
 # Constant Global Variable
 
-A constant global variable comes into multiple flavours:
+A constant global variable comes in multiple flavours:
 
 - A literal constant which can be assigned when declaring the variable, and
 - A calculated constant which can only be assigned through executing some code.
@@ -68,4 +68,16 @@ public void main() {
     _print_i32(SOME_NUMBER);
     _println();
 }
+```
+
+is expressed as
+
+```llvm
+$$ cat ./snippets/calculated-constant-2.ll
+```
+
+which, when run, returns the following result.
+
+```
+$$ cat ./snippets/calculated-constant-2.out
 ```
