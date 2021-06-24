@@ -14,8 +14,13 @@ Each of these snippets have a set of characteristics:
 
 As far as possible there is not clutter surrounding the snippet which might distract from the concept that is being illustrated.
 
+# Snippets
 
-## Building and Running
+| Name | Description |
+|-|-|
+| [Constant Global Variables](./build/thinking.md) | Initialising and referencing of constant global variables |
+
+# Building and Running
 
 I have created a number of scripts contained within `./bin`.
 
