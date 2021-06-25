@@ -11,35 +11,47 @@ declare void @_fiddle(i8*)
 %f_frame = type {i32, i32, i32}
 
 define i32 @f_g(%f_frame* %frame, i32 %x) {
-    %frame-a = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
-    %a = load i32, i32* %frame-a
-    %frame-b = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
-    %b = load i32, i32* %frame-b
-    %1 = add i32 %a, %b
-    %frame-sum = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
-    %sum = load i32, i32* %frame-sum
-    %sum2 = add i32 %1, %sum
-    %2 = add i32 %sum2, %x
-    ret i32 %2
+    %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
+    %a = load i32, i32* %1
+
+    %2 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
+    %b = load i32, i32* %2
+
+    %3 = add i32 %a, %b
+
+    %4 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
+    %sum = load i32, i32* %4
+
+    %sum2 = add i32 %3, %sum
+
+    %5 = add i32 %sum2, %x
+
+    ret i32 %5
 }
 
 define i32 @f(i32 %a, i32 %b) {
     %frame = alloca %f_frame, align 8
-    %frame-a = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
-    store i32 %a, i32* %frame-a
-    %frame-b = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
-    store i32 %b, i32* %frame-b
+
+    %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
+    store i32 %a, i32* %1
+
+    %2 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
+    store i32 %b, i32* %2
+
     %sum = add i32 %a, %b
-    %frame-sum = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
-    store i32 %sum, i32* %frame-sum
-    %1 = call i32 @f_g(%f_frame* %frame, i32 %sum)
-    ret i32 %1
+
+    %3 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
+    store i32 %sum, i32* %3
+
+    %4 = call i32 @f_g(%f_frame* %frame, i32 %sum)
+
+    ret i32 %4
 }
 
 define i32 @main() {
-  call void @_initialise_lib()
-  %1 = call i32 @f(i32 1, i32 2)
-  call void @_print_i32(i32 %1)
-  call void @_print_newline()
-  ret i32 0
+    call void @_initialise_lib()
+    %1 = call i32 @f(i32 1, i32 2)
+    call void @_print_i32(i32 %1)
+    call void @_print_newline()
+    ret i32 0
 }
