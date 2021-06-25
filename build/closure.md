@@ -93,6 +93,11 @@ This code, when executed, displays the following.
 9
 ```
 
+Some comments:
+
+- In my minds eye I can see the stack growing faster than it needs to be.  In this example `a` and `b` are placed on the runtime stack and then, when wrapped into `%f_g_frame` are duplicated.  I am sure there is native support for dealing with this but I have not been able to see how.
+- Even though the pseudo-code has marked everything as `const`, this strategy will work if the elements in `%f_g_frame` where to be updated.
+
 ## Nested Function used as a Higher-Order Function
 
 TBD
