@@ -19,6 +19,7 @@ As far as possible there is not clutter surrounding the snippet which might dist
 | Name | Description |
 |-|-|
 | [Constant Global Variables](./build/thinking.md) | Initialising and referencing of constant global variables |
+| [Nested Functions and Closures](./build/closure.md) | Nested functions are able to access the state of the enclosing function.  In the absence of higher-order function, this structure is static and can be stored on the stack.  Add higher-order functions and it then becomes necessary to store the enclosing scope in the heap. |
 
 # Building and Running
 
