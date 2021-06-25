@@ -8,15 +8,15 @@ declare void @_print_newline()
 declare void @_fiddle(i8*)
 
 ; frame containing a, b and sum
-%f_g_frame = type {i32, i32, i32}
+%f_frame = type {i32, i32, i32}
 
-define i32 @f_g(%f_g_frame* %frame, i32 %x) {
-    %frame-a = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 0
+define i32 @f_g(%f_frame* %frame, i32 %x) {
+    %frame-a = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     %a = load i32, i32* %frame-a
-    %frame-b = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 1
+    %frame-b = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
     %b = load i32, i32* %frame-b
     %1 = add i32 %a, %b
-    %frame-sum = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 2
+    %frame-sum = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
     %sum = load i32, i32* %frame-sum
     %sum2 = add i32 %1, %sum
     %2 = add i32 %sum2, %x
@@ -24,15 +24,15 @@ define i32 @f_g(%f_g_frame* %frame, i32 %x) {
 }
 
 define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_g_frame, align 8
-    %frame-a = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 0
+    %frame = alloca %f_frame, align 8
+    %frame-a = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     store i32 %a, i32* %frame-a
-    %frame-b = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 1
+    %frame-b = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
     store i32 %b, i32* %frame-b
     %sum = add i32 %a, %b
-    %frame-sum = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 2
+    %frame-sum = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
     store i32 %sum, i32* %frame-sum
-    %1 = call i32 @f_g(%f_g_frame* %frame, i32 %sum)
+    %1 = call i32 @f_g(%f_frame* %frame, i32 %sum)
     ret i32 %1
 }
 
