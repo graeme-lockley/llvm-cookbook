@@ -1,6 +1,6 @@
 # Higher-Order Function
 
-A language that supports higher-order functions is a language that treats functions as values which can be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state.
+A language that supports higher-order functions is a language that treats functions as values allowing these values to be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state.
 
 Taking a look at the following program.
 
@@ -72,7 +72,7 @@ fn double(i32 n) -> i32 {
 }
 
 fn compose((i32 -> i32) f, (i32 -> i32) g) -> (i32 -> i32) {
-    return (fn (x) -> f(g(x)));
+    return (fn (i32 x) -> f(g(x)));
 }
 
 const (i32 -> i32) doubleplus1 = compose(double, plus1);
@@ -83,9 +83,18 @@ fn main() {
 }
 ```
 
+The compilation of `plus1` and `double` is straightforward.  The general strategy of creating a function value is to store it is a structure with the first value in the structure being a reference to a function pointer and the remaining values in the structure containing the values that make up the closure.  For our example the structure is defined as
 
 ```llvm
-; ModuleID = 'higher-order-function-1.ll'
+%composure_closure = type { i32 (%composure_closure*, i32)*, i32 (i32)*, i32 (i32)* }
+```
+
+Values 1 and 2 correspond to the values `f` and `g`.  Further we compile the anonymous function `(fn (i32 x) -> f(g(x)))` into `call_compose` which extracts the `f` and `g` from the closure and performs the function composition.
+
+
+
+```llvm
+; ModuleID = 'higher-order-function-2.ll'
 target triple = "x86_64-pc-linux-gnu"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 
