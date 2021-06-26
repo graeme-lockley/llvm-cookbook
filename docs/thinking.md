@@ -12,7 +12,7 @@ So the following code:
 ```java
 const i32 MAGIC_NUMBER = 123;
 
-public void main() {
+fn main() {
     _print_i32(MAGIC_NUMBER);
     _print_newline();
 }
@@ -37,7 +37,7 @@ The following code is an example of a calculated constant.
 ```java
 const i32 MAGIC_NUMBER = 123 + 654;
 
-public void main() {
+fn main() {
     _print_i32(MAGIC_NUMBER);
     _print_newline();
 }
@@ -60,11 +60,11 @@ Returning to the calculated constant, the calculation can contain an arbitrary e
 ```java
 const i32 SOME_NUMBER = 123 + arb_function(23);
 
-public i32 arb_function(i32 a) {
+fn arb_function(i32 a) -> i32 {
     return a * a;
 }
 
-public void main() {
+fn main() {
     _print_i32(SOME_NUMBER);
     _print_newline();
 }

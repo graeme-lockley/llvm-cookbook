@@ -7,7 +7,7 @@ There are two scenarios that I am going to look at:
 - A nested function accesses its surrounding scope however the nested function is never returned as a higher-order function, and
 - A nested function accesses its surrounding scope and the nested function is returned as a higher-order function.
 
-The reason for treating these two scenarios as discrete is that the first scenario allows the frames to be stored on the stack whilst the second scenarios require the frames to be stored in the heap.
+The reason for treating these two scenarios as discrete is that the first scenario allows frames to be stored on the stack whilst the second scenarios requires that frames be stored in the heap.
 
 ## Nested Function without Higher-Order Functions
 
@@ -93,7 +93,6 @@ This code, when executed, displays the following.
 ```
 $$ cat ./snippets/closure-static-frame-2.out
 ```
-
 
 ## Nested Function used as a Higher-Order Function
 
