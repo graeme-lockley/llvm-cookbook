@@ -41,7 +41,7 @@ fn double(i32 n) -> i32 {
 }
 
 fn compose((i32 -> i32) f, (i32 -> i32) g) -> (i32 -> i32) {
-    return (fn (x) -> f(g(x)));
+    return (fn (i32 x) -> f(g(x)));
 }
 
 const (i32 -> i32) doubleplus1 = compose(double, plus1);
@@ -51,6 +51,15 @@ fn main() {
     _print_newline();
 }
 ```
+
+The compilation of `plus1` and `double` is straightforward.  The general strategy of creating a function value is to store it is a structure with the first value in the structure being a reference to a function pointer and the remaining values in the structure containing the values that make up the closure.  For our example the structure is defined as
+
+```llvm
+%composure_closure = type { i32 (%composure_closure*, i32)*, i32 (i32)*, i32 (i32)* }
+```
+
+Values 1 and 2 correspond to the values `f` and `g`.  Further we compile the anonymous function `(fn (i32 x) -> f(g(x)))` into `call_compose` which extracts the `f` and `g` from the closure and performs the function composition.
+
 
 
 ```llvm
