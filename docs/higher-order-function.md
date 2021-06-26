@@ -1,6 +1,6 @@
 # Higher-Order Function
 
-A language that supports higher-order functions is a language that treats functions as values which can be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state.
+A language that supports higher-order functions is a language that treats functions as values allowing these values to be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state.
 
 Taking a look at the following program.
 
