@@ -30,7 +30,7 @@ define i32 @f_g(%f_frame* %frame, i32 %x) {
 }
 
 define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame, align 8
+    %frame = alloca %f_frame
 
     %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     store i32 %a, i32* %1

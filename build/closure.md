@@ -1,4 +1,4 @@
-# Closure
+# Nested Functions and Closures
 
 Setting up and passing a closure around has taxed me.  The strategy I am going to show here is based on creating frames and then passing frames into functions thereby allowing the surrounding scope to be accessible.
 
@@ -7,7 +7,7 @@ There are two scenarios that I am going to look at:
 - A nested function accesses its surrounding scope however the nested function is never returned as a higher-order function, and
 - A nested function accesses its surrounding scope and the nested function is returned as a higher-order function.
 
-The reason for treating these two scenarios are discrete is that the first scenario allows the frames to be stored on the stack whilst the second scenarios require the frames to be stored in the heap.
+The reason for treating these two scenarios as discrete is that the first scenario allows the frames to be stored on the stack whilst the second scenarios require the frames to be stored in the heap.
 
 ## Nested Function without Higher-Order Functions
 
@@ -72,7 +72,7 @@ define i32 @f_g(%f_frame* %frame, i32 %x) {
 }
 
 define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame, align 8
+    %frame = alloca %f_frame
 
     %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     store i32 %a, i32* %1
@@ -182,7 +182,7 @@ define i32 @f_g_h(%f_g_frame* %parent_frame, i32 %d) {
 }
 
 define i32 @f_g(%f_frame* %parent_frame, i32 %c) {
-    %frame = alloca %f_g_frame, align 8
+    %frame = alloca %f_g_frame
 
     %1 = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 0
     store %f_frame* %parent_frame, %f_frame** %1
@@ -207,7 +207,7 @@ define i32 @f_g(%f_frame* %parent_frame, i32 %c) {
 }
 
 define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame, align 8
+    %frame = alloca %f_frame
 
     %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     store i32 %a, i32* %1

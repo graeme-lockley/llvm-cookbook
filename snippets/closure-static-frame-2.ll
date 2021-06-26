@@ -39,7 +39,7 @@ define i32 @f_g_h(%f_g_frame* %parent_frame, i32 %d) {
 }
 
 define i32 @f_g(%f_frame* %parent_frame, i32 %c) {
-    %frame = alloca %f_g_frame, align 8
+    %frame = alloca %f_g_frame
 
     %1 = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 0
     store %f_frame* %parent_frame, %f_frame** %1
@@ -64,7 +64,7 @@ define i32 @f_g(%f_frame* %parent_frame, i32 %c) {
 }
 
 define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame, align 8
+    %frame = alloca %f_frame
 
     %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
     store i32 %a, i32* %1
