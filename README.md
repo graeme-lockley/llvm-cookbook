@@ -27,8 +27,8 @@ I have created a number of scripts contained within `./bin`.
 
 | Name | Purpose |
 |------|---------|
-| `build-all.sh` | Runs all of the scripts in the correct sequence to populate `./build`. |
-| `build-docs.sh` | Iterates through all of the `md` files in `./doc`, running embedded macros and places the result into `./build`. |
-| `build-lib.sh` | This directory stores the boilerplate library code that allows the snippets to remain simple.  This script runs make in `./lib`.|
-| `build-snippets.sh` | Iterates through all of the `.ll` snippets in `./snippets`, runs `llvm-as` against each file, links using `clang` and then runs the binary placing the output into a `.out` file.  These snippets and output results are embedded into the `md` content deposited into `./build` when `build-docs.sh` is run.
-| `clean-all.sh` | Removes all of the temporary files except those that are contained in `./build`. |
+| [`build-all.sh`](./bin/build-all.sh) | Runs all of the scripts in the correct sequence to populate `./build`. |
+| [`build-docs.sh`](./bin/build-docs.sh) | Iterates through all of the `md` files in `./doc`, running embedded macros and places the result into `./build`. |
+| [`build-lib.sh`](./bin/build-lib.sh) | This directory stores the boilerplate library code that allows the snippets to remain simple.  This script runs make in `./lib`.|
+| [`build-snippets.sh`](./bin/build-snippets.sh) | Iterates through all of the `.ll` snippets in `./snippets`, runs `llvm-as` against each file, links using `clang` and then runs the binary placing the output into a `.out` file.  These snippets and output results are embedded into the `md` content deposited into `./build` when `build-docs.sh` is run.
+| [`clean-all.sh`](./bin/clean-all.sh) | Removes all of the temporary files except those that are contained in `./build`. |
