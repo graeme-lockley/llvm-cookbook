@@ -12,15 +12,16 @@ Each of these snippets have a set of characteristics:
 - They are runnable, and
 - They are trivial
 
-As far as possible there is not clutter surrounding the snippet which might distract from the concept that is being illustrated.
+As far as possible there is no clutter surrounding the snippet to distract from the concept that is being illustrated.
 
 # Snippets
 
 | Name | Description |
 |-|-|
-| [Constant Global Variables](./build/thinking.md) | Initialising and referencing of constant global variables |
-| [Higer-Order Functions](./build/higher-order-function.md) | A language that supports higher-order functions is a language that treats functions as values allowing these values to be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state. |
-| [Nested Functions and Closures](./build/closure.md) | Nested functions are able to access the state of the enclosing function.  In the absence of higher-order function, this structure is static and can be stored on the stack.  Add higher-order functions and it then becomes necessary to store the enclosing scope in the heap. |
+| [Constant Global Variables](./build/constant-global-variables.md) | Initialising and referencing of constant global variables |
+| [Nested Scoping](./build/nested-scoping.md) | A nested function accesses its surrounding scope however that function can not be passed and used outside of the surrounding scope. |
+| [Higher-Order Functions](./build/higher-order-function.md) | A language that supports higher-order functions is a language that treats functions as values allowing these values to be manipulated.  The scenarios looked at here only consider functions that have no free variables - in other words they accept arguments, return a result and, in their body, only reference global state. |
+| [Closures](./build/closure.md) | Nested functions are able to access the state of the enclosing function.  In the absence of higher-order function, this structure is static and can be stored on the stack.  Add higher-order functions and it then becomes necessary to store the enclosing scope in the heap. |
 
 # Building and Running
 

@@ -1,235 +1,115 @@
-# Nested Functions and Closures
+# Closures
 
-Setting up and passing a closure around has taxed me.  The strategy I am going to show here is based on creating frames and then passing frames into functions thereby allowing the surrounding scope to be accessible.
+Closures have always been a little mystical to me so this section is a little therapy for me to demystify something that is hugely useful and, in actual fact, not that crazy.
 
-There are two scenarios that I am going to look at:
+The scenarios that I am focusing on is where a function is abel to access its surrounding scope as a higher-order function.  The technique explored in [Nested Scoping](./nested-scoping.md) requires that the function is not accessible out of the scope in which it is instantiated.  This allows surrounding values to be accessed out of the runtime stack.  When introducing higher-order functions the solution can not rely on the runtime stack as the stack, in all likelihood, would have been unwound.  The surrounding values therefore need to be persisted in the heap.
 
-- A nested function accesses its surrounding scope however the nested function is never returned as a higher-order function, and
-- A nested function accesses its surrounding scope and the nested function is returned as a higher-order function.
-
-The reason for treating these two scenarios as discrete is that the first scenario allows frames to be stored on the stack whilst the second scenarios requires that frames be stored in the heap.
-
-## Nested Function without Higher-Order Functions
-
-To get going let's look at a piece of code to compile.
+Let's start with a classic function - functional composition.
 
 ```java
-fn f(const i32 a, const i32 b) -> i32 {
-    const i32 sum = a + b;
-
-    fn g(const i32 x) -> i32 {
-        const i32 sum2 = a + b + sum;
-        return sum2 + x;
-    }
-            
-    return g(sum);
+fn plus1(const i32 n) -> i32 {
+    return n + 1;
 }
 
+fn double(const i32 n) -> i32 {
+    return n + n;
+}
+
+fn compose(const (i32 -> i32) f, const (i32 -> i32) g) -> (i32 -> i32) {
+    return (fn (i32 x) -> f(g(x)));
+}
+
+const (i32 -> i32) doubleplus1 = compose(double, plus1);
+
 fn main() {
-    _print_i32(f(1, 2));
+    _print_i32(doubleplus1(10));
     _print_newline();
-}        
+}
 ```
 
-In the above pseudo code a couple of comments are worthwhile:
-
-- The functions `f` and `main` will have the expected signature.
-- The compilation of `main` into IR is trivial and does not need to consider closures at all.
-- The function `g` has the free variables `a`, `b` and `sum` where `a` and `b` are passed as parameters into its enclosing function whilst `sum` is a local variable in its enclosing function.
-
-From the above comments it is clear that `g` needs to be passed a frame into which `a`, `b` and `sum` are accessible.
+The compilation of `plus1` and `double` is straightforward.  The general strategy of creating a function value is to store it in a structure with the structure's first value being a reference to a function pointer and the remaining values in the structure containing the values that make up the closure.  For our example the structure is defined as
 
 ```llvm
-; ModuleID = 'closure-static-frame.ll'
+%composure_closure = type { i32 (%composure_closure*, i32)*, i32 (i32)*, i32 (i32)* }
+```
+
+Values 1 and 2 correspond to the values `f` and `g`.  Further we compile the anonymous function `(fn (i32 x) -> f(g(x)))` into `call_compose` which extracts the `f` and `g` from the closure and performs the function composition.
+
+
+```llvm
+; ModuleID = 'higher-order-function-2.ll'
 target triple = "x86_64-pc-linux-gnu"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 
 declare void @_initialise_lib()
 declare void @_print_i32(i32)
 declare void @_print_newline()
-declare void @_fiddle(i8*)
+declare i8* @malloc(i64)
 
-; frame containing a, b and sum
-%f_frame = type {i32, i32, i32}
+; The compose closure's state is made up of the apply function and the functions
+; f and g.  You will notice that the apply function takes an instance of %composure_closure
+; as argument and then the value x.  This first parameter is synonomous with Java and 
+; JavaScript's this.
+%composure_closure = type { i32 (%composure_closure*, i32)*, i32 (i32)*, i32 (i32)* }
 
-define i32 @f_g(%f_frame* %frame, i32 %x) {
-    %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
-    %a = load i32, i32* %1
+@doubleplus1 = global %composure_closure* null
 
-    %2 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
-    %b = load i32, i32* %2
-
-    %3 = add i32 %a, %b
-
-    %4 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
-    %sum = load i32, i32* %4
-
-    %sum2 = add i32 %3, %sum
-
-    %5 = add i32 %sum2, %x
-
-    ret i32 %5
+define i32 @plus1(i32 %0) {
+    %2 = add i32 %0, 1
+    ret i32 %2
 }
 
-define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame
-
-    %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
-    store i32 %a, i32* %1
-
-    %2 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
-    store i32 %b, i32* %2
-
-    %sum = add i32 %a, %b
-
-    %3 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
-    store i32 %sum, i32* %3
-
-    %4 = call i32 @f_g(%f_frame* %frame, i32 %sum)
-
-    ret i32 %4
+define i32 @double(i32 %0) {
+    %2 = add i32 %0, %0
+    ret i32 %2
 }
 
-define i32 @main() {
-    call void @_initialise_lib()
-    %1 = call i32 @f(i32 1, i32 2)
-    call void @_print_i32(i32 %1)
-    call void @_print_newline()
-    ret i32 0
-}
-```
-
-This code, when executed, displays the following.
-
-```
-9
-```
-
-Some comments:
-
-- In my minds eye I can see the stack growing faster than it needs to be.  In this example `a` and `b` are placed on the runtime stack and then, when wrapped into `%f_frame` are duplicated.  I am sure there is native support for dealing with this but I have not been able to see how.
-- Even though the pseudo-code has marked everything as `const`, this strategy will work if the elements in `%f_frame` where to be updated.
-- The compiled code accepts a pointer to a frame - this implies then that the code in `@f_g` does not know whether or not that frame is on the stack or in the heap.
-
-The example above shows nicely how a frame can be used to access values from the immediately enclosing scope.  However, when looking at the following code, we need a general solution.
-
-```java
-fn f(const i32 a, const i32 b) -> i32 {
-    const i32 fsum = a + b;
-
-    fn g(const i32 c) -> i32 {
-        const i32 gsum = a + fsum;
-
-        fn h(const i32 d) -> i32 {
-            return a + fsum + c + gsum + d;
-        }
-
-        return h(gsum);
-    }
-
-    return g(fsum);
-}
-
-fn main() {
-    _print_i32(f(1, 2));
-    _print_newline();
-}        
-```
-
-There are two frames at play when compiling this program - a frame associated with `f` (`%f_frame`) which is passed into `g` and a frame associated with `g` (`%f_g_frame`) which is passed into `h`.  To get this done we will have the `%f_g_frame` have a reference back to the `%f_frame` rather than embed the contents of the `%f_frame` into the `%f_g_frame`.
-
-Using this two frame approach we have the following result.
-
-```llvm
-; ModuleID = 'closure-static-frame-2.ll'
-target triple = "x86_64-pc-linux-gnu"
-target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
-
-declare void @_initialise_lib()
-declare void @_print_i32(i32)
-declare void @_print_newline()
-declare void @_fiddle(i8*)
-
-; f_frame containing a, b and fsum
-%f_frame = type {i32, i32, i32}
-
-; f_g_frame containing parent, c and gsum
-%f_g_frame = type {%f_frame*, i32, i32}
-
-define i32 @f_g_h(%f_g_frame* %parent_frame, i32 %d) {
-    %1 = getelementptr inbounds %f_g_frame, %f_g_frame* %parent_frame, i32 0, i32 0
-    %parent = load %f_frame*, %f_frame** %1
-
-    %2 = getelementptr inbounds %f_frame, %f_frame* %parent, i32 0, i32 0
-    %a = load i32, i32* %2
-
-    %3 = getelementptr inbounds %f_frame, %f_frame* %parent, i32 0, i32 2
-    %fsum = load i32, i32* %3
-
-    %4 = add i32 %a, %fsum
-
-    %5 = getelementptr inbounds %f_g_frame, %f_g_frame* %parent_frame, i32 0, i32 1
-    %c = load i32, i32* %5
-    %6 = add i32 %4, %c
-
-    %7 = getelementptr inbounds %f_g_frame, %f_g_frame* %parent_frame, i32 0, i32 2
-    %gsum = load i32, i32* %7
-
-    %8 = add i32 %6, %gsum
-    %9 = add i32 %8, %d
-
-    ret i32 %9
-}
-
-define i32 @f_g(%f_frame* %parent_frame, i32 %c) {
-    %frame = alloca %f_g_frame
-
-    %1 = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 0
-    store %f_frame* %parent_frame, %f_frame** %1
-
-    %2 = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 1
-    store i32 %c, i32* %2
-
-    %3 = getelementptr inbounds %f_frame, %f_frame* %parent_frame, i32 0, i32 0
-    %a = load i32, i32* %3
-
-    %4 = getelementptr inbounds %f_frame, %f_frame* %parent_frame, i32 0, i32 2
-    %fsum = load i32, i32* %4
-
-    %gsum = add i32 %a, %fsum
-
-    %5 = getelementptr inbounds %f_g_frame, %f_g_frame* %frame, i32 0, i32 2
-    store i32 %gsum, i32* %5
-
-    %6 = call i32 @f_g_h(%f_g_frame* %frame, i32 %gsum)
+define i32 @call_compose(%composure_closure* %this, i32 %x) {
+    %1 = getelementptr inbounds %composure_closure, %composure_closure* %this, i32 0, i32 1
+    %f = load i32 (i32)*, i32 (i32)** %1
     
-    ret i32 %6
-}
+    %2 = getelementptr inbounds %composure_closure, %composure_closure* %this, i32 0, i32 2
+    %g = load i32 (i32)*, i32 (i32)** %2
 
-define i32 @f(i32 %a, i32 %b) {
-    %frame = alloca %f_frame
-
-    %1 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 0
-    store i32 %a, i32* %1
-
-    %2 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 1
-    store i32 %b, i32* %2
-
-    %fsum = add i32 %a, %b
-
-    %3 = getelementptr inbounds %f_frame, %f_frame* %frame, i32 0, i32 2
-    store i32 %fsum, i32* %3
-
-    %4 = call i32 @f_g(%f_frame* %frame, i32 %fsum)
+    %3 = call i32 %g(i32 %x)
+    %4 = call i32 %f(i32 %3)
 
     ret i32 %4
 }
 
+define %composure_closure* @compose(i32 (i32)* %f, i32 (i32)* %g) {
+    %1 = call i8* @malloc(i64 24)
+    %2 = bitcast i8* %1 to %composure_closure*
+    
+    %3 = getelementptr inbounds %composure_closure, %composure_closure* %2, i32 0, i32 0
+    store i32 (%composure_closure*, i32)* @call_compose, i32 (%composure_closure*, i32)** %3
+    
+    %4 = getelementptr inbounds %composure_closure, %composure_closure* %2, i32 0, i32 1
+    store i32 (i32)* %f, i32 (i32)** %4
+
+    %5 = getelementptr inbounds %composure_closure, %composure_closure* %2, i32 0, i32 2
+    store i32 (i32)* %g, i32 (i32)** %5
+    
+    ret %composure_closure* %2
+}
+
 define i32 @main() {
     call void @_initialise_lib()
-    %1 = call i32 @f(i32 1, i32 2)
-    call void @_print_i32(i32 %1)
+
+    ; doubleplus1 = compose(double, plus1)
+    %1 = call %composure_closure* @compose(i32 (i32)* @double, i32 (i32)* @plus1)
+    store %composure_closure* %1, %composure_closure** @doubleplus1
+
+    ; _print_i32(doubleplus1(10));
+    %2 = load %composure_closure*, %composure_closure** @doubleplus1
+    %3 = getelementptr inbounds %composure_closure, %composure_closure* %2, i32 0, i32 0
+    %4 = load i32 (%composure_closure*, i32)*, i32 (%composure_closure*, i32)** %3
+    %5 = call i32 %4(%composure_closure* %2, i32 10)
+    call void @_print_i32(i32 %5)
+
+    ; _print_newline();
     call void @_print_newline()
+
     ret i32 0
 }
 ```
@@ -237,9 +117,5 @@ define i32 @main() {
 This code, when executed, displays the following.
 
 ```
-15
+22
 ```
-
-## Nested Function used as a Higher-Order Function
-
-TBD
