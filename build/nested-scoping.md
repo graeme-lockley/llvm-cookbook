@@ -2,7 +2,7 @@
 
 Setting up and passing a closure around has taxed me.  The strategy I am going to show here is based on creating frames and then passing frames into functions thereby allowing the surrounding scope to be accessible.
 
-The specific scenario is one of static nested functions - a static nested function accesses its surrounding scope however the nested function is never returned as a higher-order function.  This scenario allows the surroundng scope to be accessed from the runtime stack because, when the nested function is executed, the calling stack is in place.
+The specific scenario is one of static nested functions - a static nested function accesses its surrounding scope however the nested function is never returned as a higher-order function.  This scenario allows the surrounding scope to be accessed from the runtime stack because, when the nested function is executed, the calling stack is in place.
 
 To get going let's look at a piece of code to compile.
 
