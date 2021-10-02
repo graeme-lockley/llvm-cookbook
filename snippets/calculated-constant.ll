@@ -13,7 +13,7 @@ define i32 @main() {
 
   ; Initialise @MAGIC_NUMBER
   %1 = add i32 123, 654
-  store i32 %1, i32* @MAGIC_NUMBER             ; Save the caculated result to @MAGIC_NUMBER
+  store i32 %1, i32* @MAGIC_NUMBER             ; Save the calculated result to @MAGIC_NUMBER
 
   ; Now let's print @MAGIC_NUMBER
   %2 = load i32, i32* @MAGIC_NUMBER

@@ -19,7 +19,7 @@ define i32 @main() {
   ; Initialise @SOME_NUMBER
   %1 = call i32 @arb_function(i32 23)
   %2 = add i32 123, %1
-  store i32 %2, i32* @SOME_NUMBER             ; Save the caculated result to @SOME_NUMBER
+  store i32 %2, i32* @SOME_NUMBER             ; Save the calculated result to @SOME_NUMBER
 
   ; Now let's print @SOME_NUMBER
   %3 = load i32, i32* @SOME_NUMBER

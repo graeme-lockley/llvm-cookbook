@@ -4,3 +4,7 @@ snippets/*.out
 
 lib/*.bc
 lib/*.ll
+t/test.ll
+t/test.bc
+t/test
+t/x.txt
