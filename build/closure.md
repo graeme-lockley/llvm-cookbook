@@ -335,6 +335,12 @@ define i32 @main() {
 This code, when executed, displays the following.
 
 ```
+4
+16
+36
+4
+16
+36
 ```
 
 Some notes related to this implementation:

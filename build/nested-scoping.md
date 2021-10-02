@@ -94,6 +94,7 @@ define i32 @main() {
 This code, when executed, displays the following.
 
 ```
+9
 ```
 
 Some comments:
@@ -227,4 +228,5 @@ define i32 @main() {
 This code, when executed, displays the following.
 
 ```
+15
 ```

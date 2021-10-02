@@ -43,6 +43,7 @@ define i32 @main() {
 Running this gives the expected result
 
 ```
+123
 ```
 
 ## Calculated Constant
@@ -89,6 +90,7 @@ define i32 @main() {
 which, when run, returns the following result.
 
 ```
+777
 ```
 
 Returning to the calculated constant, the calculation can contain an arbitrary expression calling IR functions.  For example, using the technique above
@@ -143,4 +145,5 @@ define i32 @main() {
 which, when run, returns the following result.
 
 ```
+652
 ```

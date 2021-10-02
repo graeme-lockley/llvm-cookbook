@@ -57,5 +57,6 @@ define i32 @main() {
 This code, when executed, displays the following.
 
 ```
+11
 ```
 
