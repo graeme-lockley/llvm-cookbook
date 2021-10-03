@@ -4,7 +4,12 @@ snippets/*.out
 
 lib/*.bc
 lib/*.ll
-t/test.ll
-t/test.bc
+
+t/*.ll
+t/*.bc
 t/test
 t/x.txt
+t/*.pdf
+t/*.dot
+
+.DS_Store

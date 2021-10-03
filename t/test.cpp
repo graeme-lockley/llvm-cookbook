@@ -20,23 +20,35 @@ class Ex2{
 	}
 };
 
-void throw_exception(int a, int b) {
+int throw_exception(int a, int b) {
 	if (a > b) 
 		throw Ex1(a + b);
 
 	if (a == b) 
 		throw Ex2(a * b);
+
+	cout << "throw_exception: no exception to throw\n";
+
+	return b - a;
 }
 
+int fred = 1;
+
 int test_try_catch(int a, int b) {
+	int result = 0;
+
 	try {
-		throw_exception(a, b);
+		fred = 2;
+		result = throw_exception(a, b);
+		fred = 3;
 	}
 	catch(Ex1 e) {
-		return e.v;
+		fred = 4;
+		result = e.v;
 	}
 
-	return 0;
+	fred = 5;
+	return result;
 }
 
 
