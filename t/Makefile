@@ -9,6 +9,7 @@ test.bc: test.cpp
 test.ll: test.bc
 	llvm-dis test.bc
 
+# technique to create pdfs from  https://www.ics.usi.ch/images/stories/ICS/slides/llvm-graphs.pdf 
 main.pdf: test.bc
 	opt --dot-cfg -o /dev/null test.bc
 	for file in .*.dot ; do \
